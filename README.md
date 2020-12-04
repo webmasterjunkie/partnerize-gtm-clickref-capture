@@ -1,2 +1,2 @@
-# partnerize-gtm-clickref-capture
-This is the template for Google Tag Manager to capture and save the Partnerize clickref value on landing pages.
+# Google Tag Manager Click Reference Tag
+This tag utilizes `localStorage` to store a valid Partnerize clickref value for partner traffic.
