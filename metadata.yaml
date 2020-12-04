@@ -1,0 +1,5 @@
+homepage: "https://partnerize.com/"
+documentation: "https://github.com/webmasterjunkie/partnerize-gtm-clickref-capture/blob/master/README.md"
+versions:
+  - sha: c8fce1a72029099343b2c705680db3af690d1a5b
+    changeNotes: Initial release.
