@@ -2,8 +2,10 @@ homepage: "https://partnerize.com/"
 documentation: "https://github.com/webmasterjunkie/partnerize-gtm-clickref-capture/blob/master/README.md"
 versions:
   # Latest version
+  - sha: 3d85bc0515c30fd736df8c391804fb0898f81791
+    changeNotes: Add Cookie support
+  # Older versions
   - sha: 19e0c69d979c2276a84a042d146367416b58c647
     changeNotes: Update display name
-  # Older versions
   - sha: c8fce1a72029099343b2c705680db3af690d1a5b
     changeNotes: Initial release.
