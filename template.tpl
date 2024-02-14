@@ -1,4 +1,4 @@
-___TERMS_OF_SERVICE___
+﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -28,12 +28,20 @@ ___INFO___
 
 ___TEMPLATE_PARAMETERS___
 
-[]
+[
+  {
+    "type": "TEXT",
+    "name": "clickrefParameter",
+    "displayName": "Click ID Parameter",
+    "simpleValueType": true,
+    "defaultValue": "clickref",
+    "help": "The URL parameter that Partnerize will send the \"clickref\" attribution value in."
+  }
+]
 
 
 ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
-// Enter your template code here.
 const log = require('logToConsole');
 const getUrl = require('getUrl');
 const localStorage = require('localStorage');
@@ -43,7 +51,7 @@ const setCookie = require('setCookie');
 
 const localStorageID = 'partnerizeClickReference';
 
-const clickref = getQueryVariable('clickref');
+const clickref = getQueryVariable(data.clickrefParameter);
 
 const cookieOptions = {
   'domain': getRootDomain(),
@@ -70,11 +78,36 @@ function getQueryVariable(variable) {
   return '';
 }
 
-function getRootDomain() {
-  let domain = getUrl('host');
-  var separate = domain.split('.');
-  separate.shift();
-  return separate.join('.');
+function extractHostname(url) {
+  var hostname;
+
+  if (url.indexOf("//") > -1) {
+    hostname = url.split('/')[2];
+  } else {
+    hostname = url.split('/')[0];
+  }
+
+  hostname = hostname.split(':')[0];
+  hostname = hostname.split('?')[0];
+
+  return hostname;
+}
+
+function getRootDomain(url) {
+  if (url === undefined){
+    url = getUrl('host');
+  }
+  var domain = extractHostname(url),
+  splitArr = domain.split('.'),
+  arrLen = splitArr.length;
+
+  if (arrLen > 2) {
+    domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+    if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+      domain = splitArr[arrLen - 3] + '.' + domain;
+    }
+  }
+  return domain;
 }
 
 data.gtmOnSuccess();
@@ -259,9 +292,62 @@ ___WEB_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
+scenarios:
+- name: Test URL Structures
+  code: |-
+    assertThat(getRootDomain('http://www.example.com/'))
+      .isEqualTo('example.com');
+    assertThat(getRootDomain('https://www.example.com/'))
+      .isEqualTo('example.com');
+    assertThat(getRootDomain('https://1.example.com/'))
+      .isEqualTo('example.com');
+    assertThat(getRootDomain('https://1.1.example.com/'))
+      .isEqualTo('example.com');
+    assertThat(getRootDomain('https://1.example.nz'))
+      .isEqualTo('example.nz');
+    assertThat(getRootDomain('https://1.1.example.de'))
+      .isEqualTo('example.de');
+    assertThat(getRootDomain('https://example.co.uk'))
+      .isEqualTo('example.co.uk');
+    assertThat(getRootDomain('b.c.example.jp'))
+      .isEqualTo('example.jp');
+    assertThat(getRootDomain('https://例子.cn'))
+      .isEqualTo('例子.cn');
+    assertThat(getRootDomain('https://subdomain.example.io/path/'))
+      .isEqualTo('example.io');
+setup: |-
+  function extractHostname(url) {
+    var hostname;
+
+    if (url.indexOf("//") > -1) {
+      hostname = url.split('/')[2];
+    } else {
+      hostname = url.split('/')[0];
+    }
+
+    hostname = hostname.split(':')[0];
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+  }
+
+  function getRootDomain(url) {
+    var domain = extractHostname(url),
+    splitArr = domain.split('.'),
+    arrLen = splitArr.length;
+
+    if (arrLen > 2) {
+      domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+      if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+        domain = splitArr[arrLen - 3] + '.' + domain;
+      }
+    }
+    return domain;
+  }
 
 
 ___NOTES___
 
 Created on 12/3/2020, 7:48:12 PM
+
+
