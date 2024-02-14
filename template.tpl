@@ -35,7 +35,12 @@ ___TEMPLATE_PARAMETERS___
     "displayName": "Click ID Parameter",
     "simpleValueType": true,
     "defaultValue": "clickref",
-    "help": "The URL parameter that Partnerize will send the \"clickref\" attribution value in."
+    "help": "The URL parameter that Partnerize will send the \"clickref\" attribution value in.",
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ]
   }
 ]
 
@@ -51,10 +56,15 @@ const setCookie = require('setCookie');
 
 const localStorageID = 'partnerizeClickReference';
 
-const clickref = getQueryVariable(data.clickrefParameter);
+let clickref = '';
+if (data.hasOwnProperty('clickrefParameter')){
+  clickref = getQueryVariable(data.clickrefParameter);
+} else {
+  clickref = getQueryVariable('clickref');
+}
 
 const cookieOptions = {
-  'domain': getRootDomain(),
+  'domain': getRootDomain(getUrl('host')),
   'path': '/',
   'max-age': 60*60*24*365,
   'secure': true
